@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light dark;
+}
+@theme {
+  --color-primary: light-dark(rgb(130 76 119), rgb(244 178 227));
+  --color-surface-tint: light-dark(rgb(130 76 119), rgb(244 178 227));
+  --color-on-primary: light-dark(rgb(255 255 255), rgb(77 31 70));
+  --color-primary-container: light-dark(rgb(255 215 242), rgb(103 53 94));
+  --color-on-primary-container: light-dark(rgb(53 8 48), rgb(255 215 242));
+  --color-secondary: light-dark(rgb(111 88 104), rgb(219 190 209));
+  --color-on-secondary: light-dark(rgb(255 255 255), rgb(62 42 57));
+  --color-secondary-container: light-dark(rgb(248 218 237), rgb(86 64 80));
+  --color-on-secondary-container: light-dark(rgb(39 22 35), rgb(248 218 237));
+  --color-tertiary: light-dark(rgb(129 83 66), rgb(245 185 164));
+  --color-on-tertiary: light-dark(rgb(255 255 255), rgb(76 38 24));
+  --color-tertiary-container: light-dark(rgb(255 219 207), rgb(102 60 45));
+  --color-on-tertiary-container: light-dark(rgb(50 18 6), rgb(255 219 207));
+  --color-error: light-dark(rgb(186 26 26), rgb(255 180 171));
+  --color-on-error: light-dark(rgb(255 255 255), rgb(105 0 5));
+  --color-error-container: light-dark(rgb(255 218 214), rgb(147 0 10));
+  --color-on-error-container: light-dark(rgb(65 0 2), rgb(255 218 214));
+  --color-background: light-dark(rgb(255 247 249), rgb(24 18 22));
+  --color-on-background: light-dark(rgb(32 26 30), rgb(236 223 229));
+  --color-surface: light-dark(rgb(255 247 249), rgb(24 18 22));
+  --color-on-surface: light-dark(rgb(32 26 30), rgb(236 223 229));
+  --color-surface-variant: light-dark(rgb(238 222 231), rgb(78 68 74));
+  --color-on-surface-variant: light-dark(rgb(78 68 74), rgb(210 194 203));
+  --color-outline: light-dark(rgb(128 116 123), rgb(155 141 149));
+  --color-outline-variant: light-dark(rgb(210 194 203), rgb(78 68 74));
+  --color-shadow: light-dark(rgb(0 0 0), rgb(0 0 0));
+  --color-scrim: light-dark(rgb(0 0 0), rgb(0 0 0));
+  --color-inverse-surface: light-dark(rgb(54 46 51), rgb(236 223 229));
+  --color-inverse-on-surface: light-dark(rgb(251 237 243), rgb(54 46 51));
+  --color-inverse-primary: light-dark(rgb(244 178 227), rgb(130 76 119));
+  --color-primary-fixed: light-dark(rgb(255 215 242), rgb(255 215 242));
+  --color-on-primary-fixed: light-dark(rgb(53 8 48), rgb(53 8 48));
+  --color-primary-fixed-dim: light-dark(rgb(244 178 227), rgb(244 178 227));
+  --color-on-primary-fixed-variant: light-dark(rgb(103 53 94), rgb(103 53 94));
+  --color-secondary-fixed: light-dark(rgb(248 218 237), rgb(248 218 237));
+  --color-on-secondary-fixed: light-dark(rgb(39 22 35), rgb(39 22 35));
+  --color-secondary-fixed-dim: light-dark(rgb(219 190 209), rgb(219 190 209));
+  --color-on-secondary-fixed-variant: light-dark(rgb(86 64 80), rgb(86 64 80));
+  --color-tertiary-fixed: light-dark(rgb(255 219 207), rgb(255 219 207));
+  --color-on-tertiary-fixed: light-dark(rgb(50 18 6), rgb(50 18 6));
+  --color-tertiary-fixed-dim: light-dark(rgb(245 185 164), rgb(245 185 164));
+  --color-on-tertiary-fixed-variant: light-dark(rgb(102 60 45), rgb(102 60 45));
+  --color-surface-dim: light-dark(rgb(227 215 221), rgb(24 18 22));
+  --color-surface-bright: light-dark(rgb(255 247 249), rgb(63 55 60));
+  --color-surface-container-lowest: light-dark(rgb(255 255 255), rgb(18 12 16));
+  --color-surface-container-low: light-dark(rgb(253 240 246), rgb(32 26 30));
+  --color-surface-container: light-dark(rgb(248 234 240), rgb(36 30 34));
+  --color-surface-container-high: light-dark(rgb(242 229 235), rgb(47 40 44));
+  --color-surface-container-highest: light-dark(
+    rgb(236 223 229),
+    rgb(58 51 55)
+  );
+}
