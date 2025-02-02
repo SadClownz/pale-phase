@@ -14,11 +14,23 @@ import {
   type CalcNode,
   Operator,
 } from "../lib/shuntingYard";
+import { createStore, produce } from "solid-js/store";
 
+function hasFraction(value: string) {
+  return value.includes(".");
+}
 export default function App() {
   const [mode, setMode] = createSignal<"basic" | "scientific">("basic");
   const [buffer, setBuffer] = createSignal<CalcNode[]>([]);
   const [result, setResult] = createSignal<number | string>(0);
+  const [history, setHistory] = createStore<{
+    history: CalcNode[][];
+    selectedIdx: number;
+  }>({
+    history: [],
+    selectedIdx: -1,
+  });
+  let historyApplied = false;
   function appendNumber(value: number) {
     setBuffer(
       mergeNumbers([...buffer(), { value: value.toString(), type: "number" }])
@@ -67,21 +79,43 @@ export default function App() {
   function evaluate() {
     try {
       const shunted = shuntingYard(buffer());
+      console.log(shunted);
       const evaluated = evaluateCalc(shunted);
       if (evaluated) {
-        const floored = evaluated.toFixed(10);
+        const floored = hasFraction(evaluated.toString())
+          ? evaluated.toFixed(10)
+          : evaluated.toString();
         batch(() => {
+          if (historyApplied) {
+            historyApplied = false;
+            setHistory(
+              produce((prev) => {
+                const prevIdx = prev.selectedIdx;
+                console.log(JSON.parse(JSON.stringify(prev)));
+                prev.history.splice(prevIdx + 1);
+                console.log(prev);
+                prev.selectedIdx = -1;
+                return prev;
+              })
+            );
+          } else {
+            setHistory(
+              produce((prev) => {
+                prev.history.push(buffer());
+              })
+            );
+          }
           setBuffer([{ value: floored, type: "number" }]);
-          setResult(Number(floored));
+          setResult(floored);
         });
       }
     } catch (e) {
       setResult((e as Error).message);
+      console.error(e);
     }
   }
   createEffect(() => {
     const keyHandler = (e: KeyboardEvent) => {
-      console.log(e.key);
       switch (e.key) {
         case "0":
         case "1":
@@ -101,6 +135,8 @@ export default function App() {
         case "/":
         case "%":
         case ".":
+        case "(":
+        case ")":
           appendOperator(e.key as (typeof Operator)[keyof typeof Operator]);
           break;
         case "Enter":
@@ -126,10 +162,7 @@ export default function App() {
 
   return (
     <ModeContext.Provider value={{ mode, actions: { changeMode: setMode } }}>
-      <div class="flex flex-col p-4 gap-4">
-        <header class="flex justify-end ">
-          <HistoryToggle />
-        </header>
+      <div class="grid grid-cols-[1fr_minmax(0,25rem)] h-svh gap-4 place-items-center">
         <article class="rounded-4xl bg-surface text-on-surface max-w-[26.875rem] w-full mx-auto">
           <Display buffer={buffer} setBuffer={setBuffer} result={result} />
           <Keypad
@@ -140,11 +173,61 @@ export default function App() {
             evaluate={evaluate}
           />
         </article>
+        <History
+          history={() => history.history}
+          onSelected={(expressionIdx) => {
+            batch(() => {
+              const expression = history.history[expressionIdx];
+              setBuffer(expression);
+              setHistory(
+                produce((prev) => {
+                  prev.selectedIdx = expressionIdx;
+                  return prev;
+                })
+              );
+              historyApplied = true;
+            });
+          }}
+        />
       </div>
     </ModeContext.Provider>
   );
 }
 
+function History(props: {
+  history: Accessor<CalcNode[][]>;
+  onSelected: (expressionIdx: number) => void;
+}) {
+  return (
+    <aside class="w-full border-l-outline-variant border-l h-full px-4 py-6 block">
+      <h2>History</h2>
+      <ul class="p-0 list-none">
+        <For
+          each={props.history()}
+          fallback={<li class="text-sm text-on-surface-variant">No history</li>}
+        >
+          {(expression, idx) => (
+            <li class="mb-2">
+              <button
+                onClick={() => props.onSelected(idx())}
+                class="border-none bg-tertiary-container text-on-tertiary-container  text-sm font-medium px-6 h-10 py-[calc((2.5rem-calc(1.25rem-0.875rem))/2))] rounded-2xl"
+              >
+                <For each={expression}>
+                  {(node) => {
+                    if (node.type === "number") {
+                      return node.value;
+                    }
+                    return <span class="mx-2 inline-block">{node.value}</span>;
+                  }}
+                </For>
+              </button>
+            </li>
+          )}
+        </For>
+      </ul>
+    </aside>
+  );
+}
 function ModeSwitcher() {
   const { mode, actions } = useMode();
   return (
@@ -157,9 +240,7 @@ function ModeSwitcher() {
     </button>
   );
 }
-function HistoryToggle() {
-  return <button class="size-10 rounded-full appearance-none">H</button>;
-}
+
 function Display(props: {
   buffer: Accessor<CalcNode[]>;
   setBuffer: (value: CalcNode[]) => void;
@@ -186,7 +267,7 @@ function Display(props: {
 function Key(props: ComponentProps<"button">) {
   return (
     <button
-      class="size-14 rounded-2xl border-none outline-offset-2 outline-primary appearance-none bg-primary text-on-primary data-[priority=secondary]:bg-secondary-container data-[priority=secondary]:text-on-secondary-container data-[priority=low]:bg-surface-container-high data-[priority=low]:text-on-surface"
+      class="size-14 rounded-2xl border-none outline-offset-2 outline-current appearance-none bg-primary text-on-primary data-[priority=secondary]:bg-secondary-container data-[priority=secondary]:text-on-secondary-container data-[priority=low]:bg-surface-container-high data-[priority=low]:text-on-surface"
       {...props}
     />
   );
@@ -280,9 +361,7 @@ function Keypad(props: {
         >
           .
         </Key>
-        <Key data-priority="secondary" onClick={() => props.evaluate()}>
-          =
-        </Key>
+        <Key onClick={() => props.evaluate()}>=</Key>
       </div>
     </div>
   );
